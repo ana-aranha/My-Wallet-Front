@@ -1,19 +1,18 @@
-import { PageStyle, Form, DivButton } from "./Acess-style";
-import { Link } from "react-router-dom";
+import { Form, DivButton } from "../Acess-pages/Acess-style";
 import { useState } from "react";
 import { ThreeDots } from "react-loader-spinner";
+import { Page } from "./transactions-style";
 
-export default function LoginPage() {
+export default function WithdrawPage() {
 	const [disabled, setDisabled] = useState(false);
 	const [dataRegistration, setDataRegistration] = useState({
-		email: "",
-		name: "",
-		password: "",
+		value: "",
+		description: "",
 	});
 
 	return (
-		<PageStyle>
-			<h1>MyWallet</h1>
+		<Page>
+			<h2>Nova saída</h2>
 			<Form
 				onSubmit={(event) => {
 					console.log("clicou!");
@@ -22,24 +21,24 @@ export default function LoginPage() {
 				}}
 			>
 				<input
-					type="email"
-					placeholder="E-mail"
-					value={dataRegistration.email}
+					type="number"
+					placeholder="Valor"
+					value={dataRegistration.value}
 					disabled={disabled}
 					onChange={(e) => {
 						const aux = { ...dataRegistration };
-						aux.email = e.target.value;
+						aux.value = e.target.value;
 						setDataRegistration(aux);
 					}}
 				/>
 				<input
-					type="password"
-					placeholder="Senha"
-					value={dataRegistration.password}
+					type="text"
+					placeholder="Descrição"
+					value={dataRegistration.description}
 					disabled={disabled}
 					onChange={(e) => {
 						const aux = { ...dataRegistration };
-						aux.password = e.target.value;
+						aux.description = e.target.value;
 						setDataRegistration(aux);
 					}}
 				/>
@@ -56,13 +55,10 @@ export default function LoginPage() {
 							wrapperClassName=""
 						/>
 					) : (
-						`Entrar`
+						`Salvar saída`
 					)}
 				</DivButton>
 			</Form>
-			<Link to={"/registration"}>
-				<p>Primeira vez? Cadastre-se!</p>
-			</Link>
-		</PageStyle>
+		</Page>
 	);
 }

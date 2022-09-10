@@ -13,6 +13,11 @@ export const PageStyle = styled.div`
 		text-decoration: none;
 		color: #ffffff;
 	}
+
+	h2 {
+		font-size: 26px;
+		color: #ffffff;
+	}
 `;
 
 export const DivButton = styled.button`
