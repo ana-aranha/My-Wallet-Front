@@ -17,6 +17,10 @@ export const PageStyle = styled.div`
 	}
 `;
 
+export const SpanItem = styled.span`
+	color: ${(props) => (props.color === "true" ? "green" : "red")};
+`;
+
 export const FlexDiv = styled.div`
 	display: flex;
 	justify-content: space-between;
@@ -42,10 +46,6 @@ export const TransactionsView = styled.div`
 	margin: 7% 0;
 	display: flex;
 	flex-direction: column;
-
-	span {
-		color: red;
-	}
 `;
 
 export const DivButton = styled.button`

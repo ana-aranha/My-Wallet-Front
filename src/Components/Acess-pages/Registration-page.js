@@ -1,26 +1,58 @@
 import { PageStyle, Form, DivButton } from "./Acess-style";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ThreeDots } from "react-loader-spinner";
+import { Register } from "../Services/My-wallet";
+import joi from "joi";
+
+const RegistrationSchema = joi.object({
+	email: joi.string().required(),
+	name: joi.string().required().trim(),
+	password: joi.string().required(),
+	confirmPassword: joi.ref("password"),
+});
 
 export default function RegistrationPage() {
 	const [disabled, setDisabled] = useState(false);
+	const [displayViewOption, setDisplayViewOption] = useState(false);
 	const [dataRegistration, setDataRegistration] = useState({
 		email: "",
 		name: "",
 		password: "",
+		confirmPassword: "",
 	});
+	const navigate = useNavigate();
+
+	async function GettinRegistration(event) {
+		event.preventDefault();
+		setDisabled(true);
+		const validation = RegistrationSchema.validate(dataRegistration);
+
+		if (validation.error) {
+			alert(validation.error.message);
+			setDisabled(false);
+			return;
+		}
+
+		try {
+			await Register({
+				email: dataRegistration.email,
+				name: dataRegistration.name,
+				password: dataRegistration.password,
+			});
+		} catch (err) {
+			alert("Email inválido");
+			setDisabled(false);
+			return;
+		}
+
+		navigate("/");
+	}
 
 	return (
 		<PageStyle>
 			<h1>MyWallet</h1>
-			<Form
-				onSubmit={(event) => {
-					console.log("clicou!");
-					setDisabled(true);
-					event.preventDefault();
-				}}
-			>
+			<Form onSubmit={GettinRegistration}>
 				<input
 					type="text"
 					placeholder="Nome"
@@ -57,14 +89,27 @@ export default function RegistrationPage() {
 				<input
 					type="password"
 					placeholder="Confirme a senha"
-					value={dataRegistration.password}
+					value={dataRegistration.confirmPassword}
 					disabled={disabled}
 					onChange={(e) => {
 						const aux = { ...dataRegistration };
-						aux.password = e.target.value;
+						aux.confirmPassword = e.target.value;
 						setDataRegistration(aux);
 					}}
+					onKeyUp={() => {
+						dataRegistration.confirmPassword === dataRegistration.password
+							? setDisplayViewOption(false)
+							: setDisplayViewOption(true);
+					}}
 				/>
+				<p
+					style={{
+						display: displayViewOption ? "block" : "none",
+						color: "rgb(211, 55, 44)",
+					}}
+				>
+					Senhas não correspondem
+				</p>
 
 				<DivButton type="submit" disabled={disabled}>
 					{disabled ? (

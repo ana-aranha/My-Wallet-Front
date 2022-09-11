@@ -1,46 +1,57 @@
 import { PageStyle, Form, DivButton } from "./Acess-style";
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
 import { ThreeDots } from "react-loader-spinner";
+import UserContext from "../ContextConfig/UserContext";
+import { SendingLogin } from "../Services/My-wallet";
 
 export default function LoginPage() {
+	const { dataLogin, setDataLogin, setConf } = useContext(UserContext);
 	const [disabled, setDisabled] = useState(false);
-	const [dataRegistration, setDataRegistration] = useState({
-		email: "",
-		name: "",
-		password: "",
-	});
+	const navigate = useNavigate();
+
+	function GettinLogin(event) {
+		event.preventDefault();
+		setDisabled(true);
+
+		SendingLogin(dataLogin)
+			.then((resp) => {
+				setConf({
+					headers: { Authorization: `Bearer ${resp.data.token}` },
+				});
+				setDataLogin({ email: "", password: "", username: resp.data.username });
+				navigate("/homepage");
+			})
+			.catch((err) => {
+				alert(err.response.data);
+				setDisabled(false);
+			});
+	}
 
 	return (
 		<PageStyle>
 			<h1>MyWallet</h1>
-			<Form
-				onSubmit={(event) => {
-					console.log("clicou!");
-					setDisabled(true);
-					event.preventDefault();
-				}}
-			>
+			<Form onSubmit={GettinLogin}>
 				<input
 					type="email"
 					placeholder="E-mail"
-					value={dataRegistration.email}
+					value={dataLogin.email}
 					disabled={disabled}
 					onChange={(e) => {
-						const aux = { ...dataRegistration };
+						const aux = { ...dataLogin };
 						aux.email = e.target.value;
-						setDataRegistration(aux);
+						setDataLogin(aux);
 					}}
 				/>
 				<input
 					type="password"
 					placeholder="Senha"
-					value={dataRegistration.password}
+					value={dataLogin.password}
 					disabled={disabled}
 					onChange={(e) => {
-						const aux = { ...dataRegistration };
+						const aux = { ...dataLogin };
 						aux.password = e.target.value;
-						setDataRegistration(aux);
+						setDataLogin(aux);
 					}}
 				/>
 

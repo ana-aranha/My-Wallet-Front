@@ -42,6 +42,11 @@ export const Form = styled.form`
 	width: 100%;
 	margin: 25px 0;
 
+	p {
+		margin-top: 10px;
+		text-shadow: 0.5px 0.5px 2px #ffffff;
+	}
+
 	input {
 		margin: 8px 0;
 		width: 85%;

@@ -2,44 +2,71 @@ import { Form, DivButton } from "../Acess-pages/Acess-style";
 import { useState } from "react";
 import { ThreeDots } from "react-loader-spinner";
 import { Page } from "./transactions-style";
+import UserContext from "../ContextConfig/UserContext";
+import { useContext } from "react";
+import { CreateTransaction } from "../Services/My-wallet";
+import joi from "joi";
+import { useNavigate } from "react-router-dom";
+
+const TransictionSchema = joi.object({
+	amount: joi.number().required(),
+	description: joi.string().required().trim(),
+});
 
 export default function DepositPage() {
+	const { conf } = useContext(UserContext);
 	const [disabled, setDisabled] = useState(false);
-	const [dataRegistration, setDataRegistration] = useState({
-		value: "",
+	const [dataDeposit, setDataDeposit] = useState({
+		amount: "",
 		description: "",
 	});
+	const navigate = useNavigate();
+
+	async function addingDeposit(event) {
+		event.preventDefault();
+		const validation = TransictionSchema.validate(dataDeposit);
+
+		if (validation.error) {
+			alert(validation.error.message);
+			setDisabled(false);
+			return;
+		}
+
+		try {
+			await CreateTransaction(dataDeposit, conf, "deposit");
+		} catch (err) {
+			alert(err.message);
+			setDisabled(false);
+			return;
+		}
+
+		navigate("/homepage");
+	}
 
 	return (
 		<Page>
 			<h2>Nova entrada</h2>
-			<Form
-				onSubmit={(event) => {
-					console.log("clicou!");
-					setDisabled(true);
-					event.preventDefault();
-				}}
-			>
+			<Form onSubmit={addingDeposit}>
 				<input
 					type="number"
 					placeholder="Valor"
-					value={dataRegistration.value}
+					value={dataDeposit.amount}
 					disabled={disabled}
 					onChange={(e) => {
-						const aux = { ...dataRegistration };
-						aux.value = e.target.value;
-						setDataRegistration(aux);
+						const aux = { ...dataDeposit };
+						aux.amount = e.target.value;
+						setDataDeposit(aux);
 					}}
 				/>
 				<input
 					type="text"
 					placeholder="Descrição"
-					value={dataRegistration.description}
+					value={dataDeposit.description}
 					disabled={disabled}
 					onChange={(e) => {
-						const aux = { ...dataRegistration };
+						const aux = { ...dataDeposit };
 						aux.description = e.target.value;
-						setDataRegistration(aux);
+						setDataDeposit(aux);
 					}}
 				/>
 
