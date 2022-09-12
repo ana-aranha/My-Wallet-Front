@@ -1,12 +1,16 @@
 import { PageStyle, Form, DivButton } from "./Acess-style";
 import { Link, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
-import { ThreeDots } from "react-loader-spinner";
 import UserContext from "../ContextConfig/UserContext";
+import { ThreeDots } from "react-loader-spinner";
 import { SendingLogin } from "../Services/My-wallet";
 
 export default function LoginPage() {
-	const { dataLogin, setDataLogin, setConf } = useContext(UserContext);
+	const { setUsername, setConf } = useContext(UserContext);
+	const [dataLogin, setDataLogin] = useState({
+		email: "",
+		password: "",
+	});
 	const [disabled, setDisabled] = useState(false);
 	const navigate = useNavigate();
 
@@ -19,7 +23,13 @@ export default function LoginPage() {
 				setConf({
 					headers: { Authorization: `Bearer ${resp.data.token}` },
 				});
-				setDataLogin({ email: "", password: "", username: resp.data.username });
+				localStorage.setItem(
+					"conf",
+					JSON.stringify({
+						headers: { Authorization: `Bearer ${resp.data.token}` },
+					}),
+				);
+				setUsername({ username: resp.data.username });
 				navigate("/homepage");
 			})
 			.catch((err) => {

@@ -16,6 +16,7 @@ const TransictionSchema = joi.object({
 export default function TransactionsTemplate({ data, setData, type, text }) {
 	const { conf } = useContext(UserContext);
 	const [disabled, setDisabled] = useState(false);
+	//	const [numberdisabled, setNumberdisabled] = useState(false);
 	const navigate = useNavigate();
 
 	async function addingTransaction(event) {
@@ -53,6 +54,11 @@ export default function TransactionsTemplate({ data, setData, type, text }) {
 						aux.amount = e.target.value;
 						setData(aux);
 					}}
+					/* onKeyUp={(e) =>
+						/^\d+(?:\.\d{1,2})?$/.test(e.target.value)
+							? setNumberdisabled(false)
+							: setNumberdisabled(true)
+					} */
 				/>
 				<input
 					type="text"

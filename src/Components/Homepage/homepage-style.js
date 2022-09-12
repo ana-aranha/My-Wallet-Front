@@ -28,12 +28,32 @@ export const FlexDiv = styled.div`
 	width: 100%;
 	margin-bottom: 10px;
 
+	p {
+		word-break: break-word;
+		max-width: 76vw;
+	}
+
 	div:first-child {
 		display: flex;
+		align-items: center;
+		justify-content: center;
 		gap: 6px;
 		span {
 			color: gray;
 		}
+	}
+`;
+
+export const MessageDiv = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+
+	p {
+		color: grey;
+		word-break: break-word;
 	}
 `;
 
@@ -46,6 +66,8 @@ export const TransactionsView = styled.div`
 	margin: 7% 0;
 	display: flex;
 	flex-direction: column;
+	justify-content: space-between;
+	overflow-y: scroll;
 `;
 
 export const DivButton = styled.button`

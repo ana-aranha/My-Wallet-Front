@@ -4,6 +4,7 @@ import {
 	DivButton,
 	FlexDiv,
 	SpanItem,
+	MessageDiv,
 } from "./homepage-style";
 import { IconContext } from "react-icons";
 import {
@@ -17,58 +18,77 @@ import { useContext, useEffect, useState } from "react";
 import { GetTransactions } from "../Services/My-wallet";
 
 export default function Homepage() {
-	const { conf, dataLogin } = useContext(UserContext);
+	const { conf, username } = useContext(UserContext);
 	const buttons = [
 		{ icon: AiOutlinePlusCircle, text: "Nova Entrada", link: "/deposit" },
 		{ icon: AiOutlineMinusCircle, text: "Nova Saída", link: "/withdraw" },
 	];
 	const navigate = useNavigate();
 	const [transactions, setTransactions] = useState([]);
+	const [total, setTotal] = useState(0);
 
 	useEffect(() => {
 		GetTransactions(conf)
 			.then((resp) => {
-				setTransactions(resp.data);
-				console.log(resp);
+				const aux = resp.data;
+				setTransactions(aux);
+				let counter = total;
+				for (let i in aux) {
+					if (aux[i].type === "deposit") {
+						counter += Number(aux[i].amount);
+					} else {
+						counter -= Number(aux[i].amount);
+					}
+				}
+				setTotal(counter);
 			})
 			.catch((resp) => console.log("deu ruim", resp));
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	console.log(transactions);
 	return (
 		<PageStyle>
 			<FlexDiv>
-				<h2>Olá, {dataLogin.username}</h2>
+				<h2>Olá, {username.username}</h2>
 				<IconContext.Provider value={{ className: "icons" }}>
 					<AiOutlineExport onClick={() => navigate("/")} />
 				</IconContext.Provider>
 			</FlexDiv>
 			<TransactionsView>
 				{transactions.length !== 0 ? (
-					transactions.map((el, i) => <TransactionTemplade el={el} key={i} />)
+					<>
+						<div>
+							{transactions.map((el, i) => (
+								<TransactionTemplade
+									el={el}
+									key={`key ${i}`}
+									setTotal={setTotal}
+									total={total}
+								/>
+							))}
+						</div>
+						<FlexDiv>
+							<p>
+								<strong>SALDO</strong>
+							</p>
+							<SpanItem color={total >= 0 ? "true" : "false"}>
+								{total.toFixed(2).toString().replace(/\./, ",")}
+							</SpanItem>
+						</FlexDiv>
+					</>
 				) : (
 					<>
-						<FlexDiv>
+						<MessageDiv>
 							<div>
-								<span>22/04</span>
-								<p>Teste 1</p>
+								<p>Não há registros de entrada ou saída</p>
 							</div>
-							<span>2.00</span>
-						</FlexDiv>
-						<FlexDiv>
-							<div>
-								<span>22/04</span>
-								<p>Teste 1</p>
-							</div>
-							<span>2.00</span>
-						</FlexDiv>
+						</MessageDiv>
 					</>
 				)}
 			</TransactionsView>
 			<FlexDiv>
-				{buttons.map((el) => (
-					<DivButton onClick={() => navigate(el.link)}>
+				{buttons.map((el, i) => (
+					<DivButton onClick={() => navigate(el.link)} key={i}>
 						<IconContext.Provider value={{ className: "icons" }}>
 							<el.icon />
 						</IconContext.Provider>
@@ -80,7 +100,7 @@ export default function Homepage() {
 	);
 }
 
-function TransactionTemplade({ el }) {
+function TransactionTemplade({ el, setTotal, total }) {
 	let type;
 	el.type === "withdraw" ? (type = "false") : (type = "true");
 
@@ -90,7 +110,9 @@ function TransactionTemplade({ el }) {
 				<span>{el.date}</span>
 				<p>{el.description}</p>
 			</div>
-			<SpanItem color={type}>{el.amount}</SpanItem>
+			<SpanItem color={type}>
+				{Number(el.amount).toFixed(2).replace(/\./, ",")}
+			</SpanItem>
 		</FlexDiv>
 	);
 }

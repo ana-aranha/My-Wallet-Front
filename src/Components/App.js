@@ -9,12 +9,12 @@ import UserContext from "./ContextConfig/UserContext";
 import { useState } from "react";
 
 export default function App() {
-	const [dataLogin, setDataLogin] = useState({ email: "", password: "" });
+	const [username, setUsername] = useState({ username: "" });
 	const [conf, setConf] = useState({});
 
 	return (
 		<>
-			<UserContext.Provider value={{ dataLogin, setDataLogin, conf, setConf }}>
+			<UserContext.Provider value={{ username, setUsername, conf, setConf }}>
 				<BrowserRouter>
 					<GlobalStyle />
 					<Routes>
