@@ -9,4 +9,9 @@ export const Page = styled.div`
 		margin-left: 8%;
 		margin-top: 20%;
 	}
+
+	p {
+		max-width: 76%;
+		color: #ffffff;
+	}
 `;

@@ -1,5 +1,5 @@
 import { Form, DivButton } from "../Acess-pages/Acess-style";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ThreeDots } from "react-loader-spinner";
 import { Page } from "./transactions-style";
 import UserContext from "../ContextConfig/UserContext";
@@ -16,8 +16,16 @@ const TransictionSchema = joi.object({
 export default function TransactionsTemplate({ data, setData, type, text }) {
 	const { conf } = useContext(UserContext);
 	const [disabled, setDisabled] = useState(false);
-	//	const [numberdisabled, setNumberdisabled] = useState(false);
+	const [displayViewOption, setDisplayViewOption] = useState(false);
 	const navigate = useNavigate();
+	const aux = JSON.parse(localStorage.getItem("conf"));
+
+	useEffect(() => {
+		if (aux === null) {
+			navigate("/");
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	async function addingTransaction(event) {
 		event.preventDefault();
@@ -30,7 +38,11 @@ export default function TransactionsTemplate({ data, setData, type, text }) {
 		}
 
 		try {
-			await CreateTransaction(data, conf, type);
+			if (!conf.headers) {
+				await CreateTransaction(data, aux, type);
+			} else {
+				await CreateTransaction(data, conf, type);
+			}
 		} catch (err) {
 			alert(err.message);
 			setDisabled(false);
@@ -54,12 +66,19 @@ export default function TransactionsTemplate({ data, setData, type, text }) {
 						aux.amount = e.target.value;
 						setData(aux);
 					}}
-					/* onKeyUp={(e) =>
+					onKeyUp={(e) =>
 						/^\d+(?:\.\d{1,2})?$/.test(e.target.value)
-							? setNumberdisabled(false)
-							: setNumberdisabled(true)
-					} */
+							? setDisplayViewOption(false)
+							: setDisplayViewOption(true)
+					}
 				/>
+				<p
+					style={{
+						display: displayViewOption ? "block" : "none",
+					}}
+				>
+					Mais de duas casas decimais serão aproximadas. Ex: 1.123 retorna 1.12
+				</p>
 				<input
 					type="text"
 					placeholder="Descrição"
